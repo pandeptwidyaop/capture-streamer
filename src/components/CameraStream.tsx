@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useWebcam } from "@/hooks/useWebcam";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -35,7 +36,10 @@ export function CameraStream() {
   } = useWebSocket();
 
   const toggleStreaming = () => {
+    console.log("Toggle streaming called, current state:", isStreaming);
+    
     if (isStreaming) {
+      // Stop streaming
       if (streamInterval) {
         clearInterval(streamInterval);
         setStreamInterval(null);
@@ -43,6 +47,7 @@ export function CameraStream() {
       setIsStreaming(false);
       toast.info("Streaming stopped");
     } else {
+      // Start streaming
       if (!isConnected) {
         toast.error("Not connected to WebSocket server");
         return;
@@ -56,7 +61,10 @@ export function CameraStream() {
       const interval = setInterval(() => {
         const frame = captureFrame(quality);
         if (frame) {
+          console.log("Sending frame to WebSocket");
           sendMessage(frame);
+        } else {
+          console.warn("Failed to capture frame");
         }
       }, 1000 / frameRate);
       
@@ -73,6 +81,16 @@ export function CameraStream() {
   const toggleWebcam = async () => {
     console.log("Toggle webcam called, current state:", isActive);
     if (isActive) {
+      // If currently streaming, stop that first
+      if (isStreaming) {
+        if (streamInterval) {
+          clearInterval(streamInterval);
+          setStreamInterval(null);
+        }
+        setIsStreaming(false);
+        toast.info("Streaming stopped because camera was turned off");
+      }
+      
       stopWebcam();
       console.log("Stopping webcam");
     } else {
@@ -87,6 +105,7 @@ export function CameraStream() {
     }
   };
 
+  // Clean up the stream interval when frame rate or quality changes
   useEffect(() => {
     if (isStreaming) {
       if (streamInterval) {
@@ -110,6 +129,7 @@ export function CameraStream() {
     };
   }, [frameRate, quality, isStreaming, captureFrame, sendMessage]);
   
+  // Clean up on component unmount
   useEffect(() => {
     return () => {
       if (streamInterval) {

@@ -30,14 +30,21 @@ export function StreamControls({
 
   const handleFrameRateChange = (values: number[]) => {
     if (values.length > 0) {
+      console.log("Changing frame rate to:", values[0]);
       onFrameRateChange(values[0]);
     }
   };
 
   const handleQualityChange = (values: number[]) => {
     if (values.length > 0) {
+      console.log("Changing quality to:", values[0]);
       onQualityChange(values[0]);
     }
+  };
+
+  const handleToggleStream = () => {
+    console.log("Stream toggle button clicked, current state:", isStreaming);
+    onToggleStream();
   };
 
   return (
@@ -88,10 +95,11 @@ export function StreamControls({
         </div>
         
         <Button 
-          onClick={onToggleStream} 
+          onClick={handleToggleStream} 
           disabled={!canStream}
           className="w-full hover-scale"
           variant={isStreaming ? "destructive" : "default"}
+          type="button"
         >
           {isStreaming ? "Stop Streaming" : "Start Streaming"}
         </Button>
