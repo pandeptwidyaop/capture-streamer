@@ -67,7 +67,8 @@ export function CameraStream() {
           console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
           console.log("Frame data size:", frame.length);
           // Now let's actually send the frame
-          sendMessage(frame);
+          //TODO: Send to websocket
+          // sendMessage(frame);
         } else {
           console.warn("Failed to capture frame");
         }
@@ -145,8 +146,8 @@ export function CameraStream() {
       if (streamInterval) {
         clearInterval(streamInterval);
       }
-      stopWebcam();
-      disconnect();
+      // stopWebcam();
+      // disconnect();
     };
   }, [streamInterval, stopWebcam, disconnect]);
 
