@@ -60,6 +60,8 @@ export function useWebSocket() {
       return false;
     }
 
+    console.log(data);
+
     try {
 
       wsRef.current.send(data);
