@@ -16,9 +16,13 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
   const [error, setError] = useState<string | null>(null);
 
   const startWebcam = useCallback(async () => {
-    if (streamRef.current) return;
+    if (streamRef.current) {
+      console.log("Webcam already active, returning early");
+      return;
+    }
     
     try {
+      console.log("Starting webcam...");
       setIsLoading(true);
       setError(null);
       
@@ -31,24 +35,35 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
         audio: false
       };
       
+      console.log("Requesting media with constraints:", constraints);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log("Media stream obtained");
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
         setIsActive(true);
+        console.log("Webcam activated successfully");
+      } else {
+        console.error("Video ref is null, cannot set stream");
+        throw new Error("Video element not available");
       }
     } catch (err) {
+      console.error("Webcam access error:", err);
       setError("Could not access webcam. Please ensure you have granted camera permission.");
-      console.error("Webcam error:", err);
+      throw err;
     } finally {
       setIsLoading(false);
     }
   }, [options.width, options.height, options.facingMode]);
 
   const stopWebcam = useCallback(() => {
+    console.log("Stopping webcam...");
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        console.log("Stopping track:", track.kind);
+        track.stop();
+      });
       streamRef.current = null;
       
       if (videoRef.current) {
@@ -56,6 +71,9 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
       }
       
       setIsActive(false);
+      console.log("Webcam stopped successfully");
+    } else {
+      console.log("No active stream to stop");
     }
   }, []);
 

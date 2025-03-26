@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useWebcam } from "@/hooks/useWebcam";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -35,10 +34,8 @@ export function CameraStream() {
     sendMessage
   } = useWebSocket();
 
-  // Start or stop streaming
   const toggleStreaming = () => {
     if (isStreaming) {
-      // Stop streaming
       if (streamInterval) {
         clearInterval(streamInterval);
         setStreamInterval(null);
@@ -46,7 +43,6 @@ export function CameraStream() {
       setIsStreaming(false);
       toast.info("Streaming stopped");
     } else {
-      // Start streaming
       if (!isConnected) {
         toast.error("Not connected to WebSocket server");
         return;
@@ -69,25 +65,30 @@ export function CameraStream() {
       toast.success("Streaming started");
     }
   };
-  
-  // Handle connection
+
   const handleConnect = (wsUrl: string) => {
     connect(wsUrl);
   };
 
-  // Toggle webcam
   const toggleWebcam = async () => {
+    console.log("Toggle webcam called, current state:", isActive);
     if (isActive) {
       stopWebcam();
+      console.log("Stopping webcam");
     } else {
-      await startWebcam();
+      console.log("Starting webcam");
+      try {
+        await startWebcam();
+        console.log("Webcam started successfully");
+      } catch (error) {
+        console.error("Error starting webcam:", error);
+        toast.error("Failed to start camera. Please check permissions.");
+      }
     }
   };
-  
-  // Update streaming on frame rate or quality change
+
   useEffect(() => {
     if (isStreaming) {
-      // Restart streaming with new settings
       if (streamInterval) {
         clearInterval(streamInterval);
       }
@@ -109,7 +110,6 @@ export function CameraStream() {
     };
   }, [frameRate, quality, isStreaming, captureFrame, sendMessage]);
   
-  // Clean up on unmount
   useEffect(() => {
     return () => {
       if (streamInterval) {
@@ -146,6 +146,7 @@ export function CameraStream() {
                 <Button 
                   onClick={toggleWebcam} 
                   className="hover-scale"
+                  type="button"
                 >
                   Start Camera
                 </Button>
@@ -172,6 +173,7 @@ export function CameraStream() {
                   size="icon"
                   className="rounded-full shadow-lg"
                   onClick={toggleWebcam}
+                  type="button"
                 >
                   <Camera className="h-4 w-4" />
                 </Button>
