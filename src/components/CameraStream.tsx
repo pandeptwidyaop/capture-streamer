@@ -143,7 +143,10 @@ export function CameraStream() {
             {!isActive && !isLoading && !error && (
               <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center bg-card/95">
                 <Video className="h-16 w-16 text-muted-foreground" />
-                <Button onClick={startWebcam} className="hover-scale">
+                <Button 
+                  onClick={toggleWebcam} 
+                  className="hover-scale"
+                >
                   Start Camera
                 </Button>
               </div>
