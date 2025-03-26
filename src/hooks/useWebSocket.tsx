@@ -59,8 +59,9 @@ export function useWebSocket() {
       toast.error("WebSocket not connected");
       return false;
     }
-    
+
     try {
+
       wsRef.current.send(data);
       return true;
     } catch (error) {

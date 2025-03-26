@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export function CameraStream() {
   const [isStreaming, setIsStreaming] = useState(false);
-  const [frameRate, setFrameRate] = useState(15);
+  const [frameRate, setFrameRate] = useState(1);
   const [quality, setQuality] = useState(0.8);
   const [streamInterval, setStreamInterval] = useState<NodeJS.Timeout | null>(null);
   
@@ -67,8 +67,7 @@ export function CameraStream() {
           console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
           console.log("Frame data size:", frame.length);
           // Now let's actually send the frame
-          //TODO: Send to websocket
-          // sendMessage(frame);
+          sendMessage(frame);
         } else {
           console.warn("Failed to capture frame");
         }
