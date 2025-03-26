@@ -85,12 +85,15 @@
     @apply relative overflow-hidden rounded-2xl shadow-lg;
     @apply border border-border/50 bg-card;
     @apply transition-all duration-500 ease-out;
+    /* Ensure proper stacking context for z-index to work */
+    isolation: isolate;
   }
   
   .webcam-container video,
   .webcam-container canvas {
     @apply w-full h-full object-cover;
     @apply transition-all duration-300 ease-out;
+    @apply z-0;
   }
   
   .glass-panel {
@@ -104,6 +107,8 @@
   .hover-scale {
     @apply transition duration-300 ease-out;
     @apply hover:scale-[1.02];
+    position: relative;
+    z-index: 30;
   }
   
   .focus-ring {

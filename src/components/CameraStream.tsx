@@ -126,7 +126,7 @@ export function CameraStream() {
         <CardContent className="p-0">
           <div className="webcam-container aspect-video relative">
             {error && (
-              <div className="absolute inset-0 flex items-center justify-center bg-card/95">
+              <div className="absolute inset-0 flex items-center justify-center bg-card/95 z-10">
                 <div className="text-center p-6">
                   <p className="text-destructive mb-4">{error}</p>
                   <Button onClick={startWebcam}>Try Again</Button>
@@ -135,17 +135,17 @@ export function CameraStream() {
             )}
             
             {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-card/90">
+              <div className="absolute inset-0 flex items-center justify-center bg-card/90 z-10">
                 <div className="animate-pulse-subtle">Loading camera...</div>
               </div>
             )}
             
             {!isActive && !isLoading && !error && (
-              <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center bg-card/95">
+              <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center bg-card/95 z-20">
                 <Video className="h-16 w-16 text-muted-foreground" />
                 <Button 
                   onClick={toggleWebcam} 
-                  className="hover-scale"
+                  className="hover-scale relative z-30"
                   type="button"
                 >
                   Start Camera
@@ -167,7 +167,7 @@ export function CameraStream() {
             />
             
             {isActive && (
-              <div className="absolute bottom-4 right-4">
+              <div className="absolute bottom-4 right-4 z-20">
                 <Button 
                   variant="secondary" 
                   size="icon"
