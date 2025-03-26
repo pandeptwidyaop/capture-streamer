@@ -42,18 +42,24 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        setIsActive(true);
-        console.log("Webcam activated successfully");
+        
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          console.log("Video metadata loaded");
+          setIsActive(true);
+          setIsLoading(false);
+          console.log("Webcam activated successfully");
+        };
       } else {
         console.error("Video ref is null, cannot set stream");
+        setIsLoading(false);
         throw new Error("Video element not available");
       }
     } catch (err) {
       console.error("Webcam access error:", err);
       setError("Could not access webcam. Please ensure you have granted camera permission.");
-      throw err;
-    } finally {
       setIsLoading(false);
+      throw err;
     }
   }, [options.width, options.height, options.facingMode]);
 
@@ -78,11 +84,17 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
   }, []);
 
   const captureFrame = useCallback((quality: number = 0.9): string | null => {
-    if (!canvasRef.current || !videoRef.current || !isActive) {
-      console.log("Cannot capture frame:",
-        !canvasRef.current ? "canvas ref is null" : 
-        !videoRef.current ? "video ref is null" : 
-        !isActive ? "webcam is not active" : "unknown reason");
+    // Check if webcam is truly active by verifying both isActive state and streamRef
+    if (!canvasRef.current || !videoRef.current) {
+      console.log("Cannot capture frame: canvas or video ref is null");
+      return null;
+    }
+    
+    if (!isActive || !streamRef.current) {
+      console.log("Cannot capture frame: webcam is not active", { 
+        isActiveState: isActive, 
+        hasStream: !!streamRef.current 
+      });
       return null;
     }
     

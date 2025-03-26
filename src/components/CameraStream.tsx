@@ -36,7 +36,7 @@ export function CameraStream() {
   } = useWebSocket();
 
   const toggleStreaming = () => {
-    console.log("Toggle streaming called, current state:", isStreaming);
+    console.log("Toggle streaming called, current state:", isStreaming, "webcam active:", isActive);
     
     if (isStreaming) {
       // Stop streaming
@@ -58,16 +58,16 @@ export function CameraStream() {
         return;
       }
       
+      console.log("Starting frame capture interval");
       const interval = setInterval(() => {
+        console.log("Attempting to capture frame, webcam active:", isActive);
         const frame = captureFrame(quality);
         if (frame) {
-          // Log the first 100 characters of the frame data to avoid cluttering the console
+          // Log the first 100 characters of the frame data
           console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
-          
-          // Instead of sending, just log it
-          console.log("Would send frame of size:", frame.length);
-          // Uncomment this line to actually send the frame once we confirm capturing works
-          // sendMessage(frame);
+          console.log("Frame data size:", frame.length);
+          // Now let's actually send the frame
+          sendMessage(frame);
         } else {
           console.warn("Failed to capture frame");
         }
@@ -117,14 +117,15 @@ export function CameraStream() {
         clearInterval(streamInterval);
       }
       
+      console.log("Updating stream interval due to frameRate or quality change");
       const interval = setInterval(() => {
+        console.log("Attempting to capture frame (from effect)");
         const frame = captureFrame(quality);
         if (frame) {
-          // Log the first 100 characters of the frame data
-          console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
-          console.log("Frame data size:", frame.length);
-          // Comment out the sendMessage for debugging
-          // sendMessage(frame);
+          console.log("Captured frame, size:", frame.length);
+          sendMessage(frame);
+        } else {
+          console.warn("Failed to capture frame (from effect)");
         }
       }, 1000 / frameRate);
       
@@ -148,6 +149,11 @@ export function CameraStream() {
       disconnect();
     };
   }, [streamInterval, stopWebcam, disconnect]);
+
+  // Debug log for monitoring webcam state
+  useEffect(() => {
+    console.log("Webcam state changed:", { isActive, isLoading, error });
+  }, [isActive, isLoading, error]);
 
   return (
     <div className="space-y-6 animate-fade-in">
