@@ -61,8 +61,13 @@ export function CameraStream() {
       const interval = setInterval(() => {
         const frame = captureFrame(quality);
         if (frame) {
-          console.log("Sending frame to WebSocket");
-          sendMessage(frame);
+          // Log the first 100 characters of the frame data to avoid cluttering the console
+          console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
+          
+          // Instead of sending, just log it
+          console.log("Would send frame of size:", frame.length);
+          // Uncomment this line to actually send the frame once we confirm capturing works
+          // sendMessage(frame);
         } else {
           console.warn("Failed to capture frame");
         }
@@ -115,7 +120,11 @@ export function CameraStream() {
       const interval = setInterval(() => {
         const frame = captureFrame(quality);
         if (frame) {
-          sendMessage(frame);
+          // Log the first 100 characters of the frame data
+          console.log("Captured frame data (first 100 chars):", frame.substring(0, 100) + "...");
+          console.log("Frame data size:", frame.length);
+          // Comment out the sendMessage for debugging
+          // sendMessage(frame);
         }
       }, 1000 / frameRate);
       

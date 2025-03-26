@@ -78,24 +78,43 @@ export function useWebcam(options: WebcamOptions = { width: 1280, height: 720 })
   }, []);
 
   const captureFrame = useCallback((quality: number = 0.9): string | null => {
-    if (!canvasRef.current || !videoRef.current || !isActive) return null;
+    if (!canvasRef.current || !videoRef.current || !isActive) {
+      console.log("Cannot capture frame:",
+        !canvasRef.current ? "canvas ref is null" : 
+        !videoRef.current ? "video ref is null" : 
+        !isActive ? "webcam is not active" : "unknown reason");
+      return null;
+    }
     
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    const context = canvas.getContext('2d');
-    
-    if (!context) return null;
-    
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // Draw the current video frame to the canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Convert canvas to data URL with specified quality
-    return canvas.toDataURL('image/jpeg', quality);
-  }, [isActive]);
+    try {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      const context = canvas.getContext('2d');
+      
+      if (!context) {
+        console.error("Could not get 2D context from canvas");
+        return null;
+      }
+      
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth || options.width;
+      canvas.height = video.videoHeight || options.height;
+      
+      console.log(`Capturing frame at ${canvas.width}x${canvas.height}`);
+      
+      // Draw the current video frame to the canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert canvas to data URL with specified quality
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      console.log(`Captured frame with quality ${quality}, data URL length: ${dataUrl.length}`);
+      
+      return dataUrl;
+    } catch (error) {
+      console.error("Error capturing frame:", error);
+      return null;
+    }
+  }, [isActive, options.width, options.height]);
 
   // Clean up on unmount
   useEffect(() => {
