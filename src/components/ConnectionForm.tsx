@@ -20,7 +20,7 @@ export function ConnectionForm({
   isConnecting,
   connectionUrl
 }: ConnectionFormProps) {
-  const [url, setUrl] = useState(connectionUrl || "ws://localhost:8080");
+  const [url, setUrl] = useState(connectionUrl || "ws://localhost:8000/ws/exam/user/pande-dev/package/a1/repeat/1");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
