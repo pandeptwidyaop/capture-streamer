@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { SlidersHorizontal } from "lucide-react";
 
 interface StreamControlsProps {
   isConnected: boolean;
@@ -27,10 +28,25 @@ export function StreamControls({
 }: StreamControlsProps) {
   const canStream = isConnected && isActive;
 
+  const handleFrameRateChange = (values: number[]) => {
+    if (values.length > 0) {
+      onFrameRateChange(values[0]);
+    }
+  };
+
+  const handleQualityChange = (values: number[]) => {
+    if (values.length > 0) {
+      onQualityChange(values[0]);
+    }
+  };
+
   return (
     <Card className="animate-slide-up">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Stream Controls</CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <SlidersHorizontal className="h-4 w-4" />
+          Stream Controls
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-4">
@@ -44,8 +60,9 @@ export function StreamControls({
               min={1}
               max={30}
               step={1}
+              defaultValue={[frameRate]}
               value={[frameRate]}
-              onValueChange={(value) => onFrameRateChange(value[0])}
+              onValueChange={handleFrameRateChange}
               disabled={!canStream}
               className="focus-ring"
             />
@@ -61,8 +78,9 @@ export function StreamControls({
               min={0.1}
               max={1}
               step={0.05}
+              defaultValue={[quality]}
               value={[quality]}
-              onValueChange={(value) => onQualityChange(value[0])}
+              onValueChange={handleQualityChange}
               disabled={!canStream}
               className="focus-ring"
             />
